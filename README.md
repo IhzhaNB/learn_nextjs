@@ -17,6 +17,7 @@
 13. [Route Groups](#route-groups)
 14. [Layout](#layout)
 15. [Nested Layout](#nested-layout)
+16. [Multiple Root Layouts](#multiple-root-layouts)
 
 # Introduction Next.js
 
@@ -484,3 +485,109 @@ export default function ProductsLayout({
 ```
 
 Dalam contoh ini, setiap halaman di bawah `/products` (termasuk `/products` itu sendiri dan `/products/[productId]`) akan memiliki _border_ biru, judul "Navigasi Produk", dan teks "Lihat juga Produk Unggulan Kami\!", di samping _header_ dan _footer_ dari _root layout_.
+
+# Multiple Root Layouts
+
+Anda bisa menggunakan beberapa _root layout_ di aplikasi Next.js untuk menerapkan _layout_ yang berbeda ke bagian-bagian aplikasi yang berbeda.
+
+### Tantangan Awal
+
+Secara _default_, _header_ dan _footer_ yang ditambahkan ke _file_ `layout.tsx` di _root_ (`app/layout.tsx`) akan diterapkan ke setiap halaman di aplikasi. Namun, seringkali ada kebutuhan untuk memiliki _layout_ yang berbeda untuk bagian-bagian tertentu, misalnya halaman _login_ atau registrasi yang tidak memiliki _header_ dan _footer_ utama.
+
+### Solusi: Route Groups
+
+_Route Groups_ adalah solusi yang elegan untuk masalah ini. Mereka memungkinkan Anda mengatur struktur proyek dan menerapkan _layout_ secara selektif tanpa memengaruhi URL.
+
+**Langkah-langkah Implementasi:**
+
+1.  **Buat _Route Groups_**: Di _folder_ `app`, buat _route groups_ dengan membungkus nama _folder_ dalam tanda kurung, misalnya:
+
+    - `(marketing)`: Untuk halaman seperti _homepage_, halaman fitur, atau halaman pelanggan.
+    - `(auth)`: Untuk halaman seperti _login_ dan registrasi.
+
+    **Contoh Struktur Folder:**
+
+    ```
+    src/
+    └── app/
+        ├── (marketing)/
+        │   ├── page.tsx       <- Homepage
+        │   └── customers/
+        │       └── page.tsx
+        ├── (auth)/
+        │   ├── login/
+        │   │   └── page.tsx
+        │   └── register/
+        │       └── page.tsx
+        └── layout.tsx         <- Root Layout Awal (akan dipindahkan)
+    ```
+
+2.  **Pindahkan Halaman ke Grup yang Sesuai**: Pindahkan _folder_ halaman yang relevan ke dalam _route group_ masing-masing.
+
+3.  **Pindahkan _Root Layout_ Asli**: Pindahkan _file_ `layout.tsx` _root_ yang asli dari _folder_ `app` langsung ke dalam salah satu _route group_ (misalnya, `(marketing)`). Sangat penting bahwa _root layout_ tidak lagi ada langsung di _folder_ `app`. Anda juga bisa mengganti nama _file layout_ ini (misalnya, menjadi `marketing-layout.tsx` meskipun tetap berfungsi sebagai `layout.tsx`).
+
+    **Struktur Setelah Pemindahan:**
+
+    ```
+    src/
+    └── app/
+        ├── (marketing)/
+        │   ├── layout.tsx     <- Layout untuk grup (marketing)
+        │   ├── page.tsx
+        │   └── customers/
+        │       └── page.tsx
+        └── (auth)/
+            ├── login/
+            │   └── page.tsx
+            └── register/
+                └── page.tsx
+    ```
+
+    *Catatan: Jika ada `page.tsx` langsung di `app/`, ia juga harus dipindahkan ke salah satu *route group* agar memiliki *layout* induk.*
+
+4.  **Buat _Layout_ Baru untuk Grup Lain**: Buat _file_ `layout.tsx` baru di _route group_ lainnya (misalnya, `(auth)`) dan sesuaikan sesuai kebutuhan. Misalnya, Anda bisa menghilangkan _header_ dan hanya menyisakan _footer_ untuk halaman _login_ dan registrasi.
+
+    **Contoh `src/app/(auth)/layout.tsx`:**
+
+    ```typescript
+    // src/app/(auth)/layout.tsx
+
+    import React from "react";
+
+    export default function AuthLayout({
+      children,
+    }: {
+      children: React.ReactNode;
+    }) {
+      return (
+        <html lang="en">
+          <body>
+            <main
+              style={{
+                padding: "20px",
+                maxWidth: "400px",
+                margin: "50px auto",
+                border: "1px solid #eee",
+                borderRadius: "8px",
+              }}
+            >
+              {children} {/* Konten halaman login/register */}
+            </main>
+            <footer
+              style={{ textAlign: "center", marginTop: "30px", color: "#888" }}
+            >
+              <p>&copy; 2025 GadgetX. All rights reserved.</p>
+            </footer>
+          </body>
+        </html>
+      );
+    }
+    ```
+
+### Hasil Akhir
+
+URL akan tetap tidak berubah (misalnya, `/login`, `/register`, `/customers`), tetapi bagian-bagian aplikasi yang berbeda kini akan memiliki _layout_ yang berbeda. Halaman _login_ dan registrasi mungkin hanya memiliki _footer_, sementara halaman pelanggan memiliki _header_ dan _footer_ lengkap.
+
+### Manfaat
+
+Pendekatan ini memberikan fleksibilitas luar biasa untuk menciptakan antarmuka pengguna yang berbeda untuk berbagai bagian aplikasi sambil menjaga kode tetap terorganisir dan mudah dipelihara.
