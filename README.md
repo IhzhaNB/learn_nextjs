@@ -1,4 +1,20 @@
-# 1. Introduction Next.js
+# Learn Next.JS
+
+## Table Content
+
+1. [Introduction Next.js](#introduction-nextjs)
+2. [Hello World!](#hello-world)
+3. [Project Structure](#project-structure)
+4. [About Server Component & Client Component](#about-server-component--client-component)
+5. [File System-Based Routing](#file-system-based-routing)
+6. [Nested Routes](#nested-routes)
+7. [Dynamic Routes](#dynamic-routes)
+8. [Nested Dynamic Routes](#nested-dynamic-routes)
+9. [Catch-all Segments in Routing](#catch-all-segments-in-routing)
+10. [Customizing Not Found Pages](#customizing-not-found-pages)
+11. [File Organization and Routing](#file-organization-and-routing)
+
+# Introduction Next.js
 
 ## Apa Itu Next.js?
 
@@ -24,7 +40,7 @@ Next.js menyederhanakan pembangunan aplikasi web siap produksi. Fitur-fitur utam
 - Diperlukan pengetahuan tentang **HTML**, **CSS**, dan **JavaScript modern**.
 - Pemahaman yang baik tentang dasar-dasar React sangat penting, termasuk komponen fungsi, _props_, _state_, JSX, dan _hooks_.
 
-# 2. Hello World!
+# Hello World!
 
 ## Setting up the Development Environment
 
@@ -64,7 +80,7 @@ Video ini menggunakan folder bernama "nextjs-tutorials" sebagai _workspace_.
 - Video ini menunjukkan cara mengganti teks pada _list item_ kedua dengan "Hello World".
 - Simpan file, dan _browser_ akan secara otomatis me-_refresh_ untuk menampilkan perubahan.
 
-# 3. Project Structure
+# Project Structure
 
 ## Root Level Files
 
@@ -91,7 +107,7 @@ Video ini menggunakan folder bernama "nextjs-tutorials" sebagai _workspace_.
 3.  Untuk URL `localhost:3000`, ia mencari `page.tsx` di dalam folder `app`.
 4.  Komponen dari `page.tsx` (misalnya, komponen `Home`) dirender di dalam _root layout_.
 
-# 4. About Server Component & Client Component
+# About Server Component & Client Component
 
 ## React Server Components
 
@@ -110,7 +126,7 @@ Kenalan dulu konsep React Server Components (RSC) sebagai konsep fundamental unt
   - Mereka tidak dapat melakukan tugas-tugas _server-side_ seperti membaca _file_.
   - Mereka dapat menggunakan _hooks_ dan menangani interaksi pengguna, mirip dengan komponen React tradisional.
 
-# 5. File System-Based Routing in Next.js
+# File System-Based Routing
 
 Sekarang menjelaskan _routing_ berbasis sistem _file_ di Next.js. Berikut adalah penjelasan konsep-konsep utamanya:
 
@@ -134,7 +150,7 @@ Sekarang menjelaskan _routing_ berbasis sistem _file_ di Next.js. Berikut adalah
   - Ini menyederhanakan _routing_ karena Anda tidak perlu menginstal atau mengkonfigurasi _router_ terpisah. Struktur _file_ dan _folder_ Anda menangani logika _routing_.
   - Ini sejalan dengan filosofi Next.js yang mendukung konvensi daripada konfigurasi.
 
-# 6. Nested Routes in Next.js
+# Nested Routes
 
 Cara membuat _nested routes_ (rute bersarang) dalam aplikasi Next.js menggunakan App Router. Berikut adalah penjelasannya:
 
@@ -146,7 +162,7 @@ Cara membuat _nested routes_ (rute bersarang) dalam aplikasi Next.js menggunakan
   - Setiap _subfolder_ ini (`first` dan `second`) juga akan berisi _file_ `page.tsx` sendiri untuk mendefinisikan konten untuk rute bersarang spesifik tersebut.
 - **Poin Penting:** Next.js secara otomatis memetakan struktur _folder_ Anda di dalam direktori `app` ke jalur URL.
 
-# 7. Dynamic Routes in Next.js
+# Dynamic Routes
 
 Pengimplementasian _dynamic routes_ di Next.js, yang berguna untuk aplikasi dengan banyak halaman yang memiliki struktur serupa, seperti halaman detail produk atau _postingan blog_.
 
@@ -170,7 +186,7 @@ Berikut adalah penjelasan konsep-konsep utamanya:
   - `app/products/page.tsx` -> `/products`
   - `app/products/[productID]/page.tsx` -> `/products/1`, `/products/2`, `/products/any-string`, dll.
 
-# 8. Nested Dynamic Routes in Next.js
+# Nested Dynamic Routes
 
 Cara membuat _nested dynamic routes_ (rute dinamis bersarang) di Next.js. Berikut adalah penjelasannya:
 
@@ -183,7 +199,7 @@ Cara membuat _nested dynamic routes_ (rute dinamis bersarang) di Next.js. Beriku
 - **Demonstrasi:** Video ini menunjukkan bagaimana menavigasi ke `/products/1/reviews/1` menampilkan "Review 1 for product 1", dan mengubah URL menjadi `/products/100/reviews/5` memperbarui konten menjadi "Review 5 for product 100".
 - **Poin Penting:** Rute dinamis bersarang dibuat dengan menggunakan segmen dinamis (_folder_ dengan tanda kurung siku) di dalam nama _folder_ bersarang.
 
-# 9. Catch-all Segments in Next.js Routing
+# Catch-all Segments in Routing
 
 Cara menggunakan _catch-all segments_ dalam _routing_ Next.js, yang merupakan fitur canggih untuk menangani _dynamic routes_ dengan banyak segmen. Berikut adalah penjelasan konsep-konsep utamanya:
 
@@ -209,7 +225,7 @@ Cara menggunakan _catch-all segments_ dalam _routing_ Next.js, yang merupakan fi
 
 Pada intinya, _catch-all segments_ menyediakan cara yang fleksibel dan efisien untuk mengelola skenario _routing_ yang kompleks, terutama untuk situs yang padat konten seperti dokumentasi, dengan menangkap beberapa segmen URL dalam satu _file_.
 
-# 10. Customizing Not Found Pages
+# Customizing Not Found Pages
 
 Cara membuat dan menyesuaikan halaman 404 "Not Found" dalam aplikasi Next.js menggunakan App Router.
 
@@ -224,3 +240,18 @@ Berikut adalah poin-poin pentingnya:
   - Mengimpor dan menggunakan _hook_ `usePathname` dari `next/navigation`.
   - Karena `usePathname` adalah _hook_ sisi _client_, Anda harus menandai _file_ `not-found.tsx` dengan direktif `"use client"` di bagian atas.
   - Anda kemudian dapat mengurai _string_ `pathname` untuk mengekstrak parameter rute yang diperlukan dan menampilkannya di komponen Anda.
+
+# File Organization and Routing
+
+Cara Next.js menangani organisasi _file_ dan _routing_:
+
+- **Routing Berbasis Sistem _File_:** Next.js menggunakan _router_ berbasis sistem _file_ di mana setiap _folder_ di direktori `app` merepresentasikan segmen rute yang memetakan ke jalur URL.
+- **Rute yang Dapat Diakses Publik:** Sebuah rute hanya menjadi dapat diakses publik ketika Anda menambahkan _file_ `page.js` atau `page.tsx` ke _folder_ yang sesuai.
+  - Misalnya, membuat _folder_ `dashboard` dan komponen `line-chart.tsx` di dalamnya tidak akan membuat `/dashboard` dapat diakses. Anda akan mendapatkan kesalahan 404.
+- **Persyaratan `page.tsx`:**
+  - _File_ `page.tsx` harus mengekspor komponen React _default_.
+  - Jika Anda tidak memiliki ekspor _default_, atau jika ekspor _default_ bukan komponen React, Anda akan mengalami kesalahan.
+  - Hanya konten yang dikembalikan oleh komponen yang diekspor _default_ di `page.tsx` yang akan dirender di _browser_. Komponen lain di dalam _file_ `page.tsx` yang sama (seperti komponen `barChart` dalam contoh) tidak akan muncul kecuali secara eksplisit disertakan dalam ekspor _default_.
+- **Kolokasi _File_:** Anda dapat dengan aman menempatkan _file_ proyek lain (seperti komponen individual, fungsi utilitas, dll.) di dalam _folder_ segmen rute di dalam direktori `app`. _File-file_ ini tidak akan secara tidak sengaja menjadi rute sendiri selama tidak ada _file_ `page.tsx` yang membuat _folder_ tersebut publik.
+- **Struktur _File_ Alternatif:** Meskipun Anda dapat menyimpan _file_ di dalam direktori `app`, Next.js itu fleksibel. Beberapa _developer_ lebih suka menyimpan _file_ di luar direktori `app`, misalnya, di _folder_ `src` dengan _folder_ `components` terpisah.
+- **Fitur Mendatang:** Video ini menyebutkan bahwa Next.js menawarkan fitur tambahan untuk organisasi proyek, yang akan dibahas selanjutnya.
