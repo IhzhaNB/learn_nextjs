@@ -7,12 +7,41 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <header
+          style={{
+            background: "#f0f0f0",
+            padding: "10px",
+            borderBottom: "1px solid #ccc",
+          }}
+        >
+          <h1>Header Aplikasi Saya</h1>
+          <nav>
+            <a href="/">Home</a> | <a href="/about">About</a> |{" "}
+            <a href="/contact">Contact</a>
+          </nav>
+        </header>
+
+        <main style={{ padding: "20px" }}>
+          {children} {/* Di sinilah konten dari page.tsx akan dirender */}
+        </main>
+
+        <footer
+          style={{
+            background: "#f0f0f0",
+            padding: "10px",
+            borderTop: "1px solid #ccc",
+            marginTop: "20px",
+          }}
+        >
+          <p>&copy; 2025 Aplikasi Next.js Saya</p>
+        </footer>
+      </body>
     </html>
   );
 }

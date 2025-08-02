@@ -14,17 +14,20 @@
 10. [Customizing Not Found Pages](#customizing-not-found-pages)
 11. [File Organization and Routing](#file-organization-and-routing)
 12. [Private Folder](#private-folder)
+13. [Route Groups](#route-groups)
+14. [Layout](#layout)
+15. [Nested Layout](#nested-layout)
 
 # Introduction Next.js
 
-## Apa Itu Next.js?
+### Apa Itu Next.js?
 
 - **Next.js** adalah **framework React** untuk membangun aplikasi web _full-stack_.
 - Meskipun React adalah _library_ untuk membangun antarmuka pengguna (lapisan tampilan), Next.js menyediakan fitur tambahan untuk membuat aplikasi siap produksi.
 - Fitur-fitur ini mencakup **routing**, **rendering yang dioptimalkan**, **pengambilan data**, **bundling**, **kompilasi**, dan banyak lagi, menghilangkan kebutuhan untuk menginstal banyak paket tambahan.
 - Next.js memiliki konvensinya sendiri yang harus diikuti.
 
-## Mengapa Belajar Next.js?
+### Mengapa Belajar Next.js?
 
 Next.js menyederhanakan pembangunan aplikasi web siap produksi. Fitur-fitur utamanya meliputi:
 
@@ -36,21 +39,21 @@ Next.js menyederhanakan pembangunan aplikasi web siap produksi. Fitur-fitur utam
 - **Pengoptimalan**: Pengoptimalan langsung untuk gambar, font, dan skrip.
 - **Sistem build yang dioptimalkan**: Fokus pada kode daripada konfigurasi yang kompleks.
 
-## Prasyarat
+### Prasyarat
 
 - Diperlukan pengetahuan tentang **HTML**, **CSS**, dan **JavaScript modern**.
 - Pemahaman yang baik tentang dasar-dasar React sangat penting, termasuk komponen fungsi, _props_, _state_, JSX, dan _hooks_.
 
 # Hello World!
 
-## Setting up the Development Environment
+### Setting up the Development Environment
 
 Untuk memulai, Anda memerlukan dua hal:
 
 - **Node.js**: Unduh dan instal rilis stabil terbaru dari nodejs.org. Pastikan versinya 18.17 atau yang lebih baru.
 - **Text Editor**: direkomendasikan **VS Code**, yang dapat diunduh dari code.visualstudio.com.
 
-## Creating a New Next.js Project
+### Creating a New Next.js Project
 
 Video ini menggunakan folder bernama "nextjs-tutorials" sebagai _workspace_.
 
@@ -67,14 +70,14 @@ Video ini menggunakan folder bernama "nextjs-tutorials" sebagai _workspace_.
   - Import Alias: Default
   - Catatan dari pertanyaan diatas adalah opsional
 
-## Running the Application
+### Running the Application
 
 - Setelah proyek selesai dibuat, masuk ke folder proyek: `cd {nama-file}`.
 - Jalankan _development server_: `npm run dev`.
 - Aplikasi akan tersedia di `http://localhost:3000`.
 - Buka tautan ini di _browser_ Anda untuk melihat halaman sambutan Next.js.
 
-## Making Your First Change
+### Making Your First Change
 
 - Halaman sambutan menyarankan untuk mengedit `src/app/page.tsx`.
 - Di VS Code, buka file ini.
@@ -83,13 +86,13 @@ Video ini menggunakan folder bernama "nextjs-tutorials" sebagai _workspace_.
 
 # Project Structure
 
-## Root Level Files
+### Root Level Files
 
 - `package.json`: Mengelola dependensi proyek (seperti Next.js, React, React DOM, dan mungkin TypeScript, Tailwind CSS, ESLint) serta _script_ (seperti `dev`, `build`, `start`, `lint`).
 - **Configuration Files**: Termasuk `next.config.js` (untuk pengaturan Next.js), `tsconfig.json` (untuk TypeScript), `eslint.config.js` (untuk ESLint), dan `postcss.config.js` (untuk Tailwind CSS).
 - **Other Files**: `package-lock.json` (memastikan instalasi dependensi yang konsisten), `.gitignore` (untuk kontrol versi), `README.md` (instruksi proyek), dan `next-env.d.ts` (deklarasi TypeScript untuk Next.js).
 
-## Root Level Folders
+### Root Level Folders
 
 - `.next` folder: Dibuat saat menjalankan _script_ `dev` atau `build`. Dari sinilah aplikasi Next.js sebenarnya disajikan. Biasanya diabaikan oleh Git.
 - `node_modules`: Berisi semua dependensi proyek yang terinstal. Dibuat oleh `npm install` atau secara otomatis oleh _script_ `dev`. Juga biasanya diabaikan oleh Git.
@@ -101,7 +104,7 @@ Video ini menggunakan folder bernama "nextjs-tutorials" sebagai _workspace_.
     - `layout.tsx`: Mendefinisikan elemen UI yang dibagikan di berbagai halaman.
     - `page.tsx`: Membuat konten untuk rute tertentu (misalnya, apa yang terlihat di `localhost:3000`). Komponen yang didefinisikan di sini (misalnya, komponen `Home`) dimasukkan ke dalam `layout.tsx` sebagai _prop_ `children`.
 
-## Execution Flow (npm run dev)
+### Execution Flow (npm run dev)
 
 1.  Perintah memulai eksekusi dari `package.json`.
 2.  Kemudian beralih ke `layout.tsx` untuk merender _root layout_.
@@ -110,7 +113,7 @@ Video ini menggunakan folder bernama "nextjs-tutorials" sebagai _workspace_.
 
 # About Server Component & Client Component
 
-## React Server Components
+### React Server Components
 
 Kenalan dulu konsep React Server Components (RSC) sebagai konsep fundamental untuk memahami _routing_ di Next.js. Berikut adalah penjelasannya:
 
@@ -260,7 +263,7 @@ Cara Next.js menangani organisasi _file_ dan _routing_:
 
 Private Folder di Next.js adalah fitur yang dirancang untuk membantu Anda mengatur proyek dengan lebih baik. Konsep utamanya adalah folder ini **tidak akan menjadi bagian dari sistem _routing_ Next.js**, artinya tidak bisa diakses langsung melalui URL di _browser_.
 
-## Cara Membuat Folder Privat
+### Cara Membuat Folder Privat
 
 Untuk membuat folder menjadi privat, Anda hanya perlu menambahkan garis bawah (`_`) di awal nama folder tersebut.
 
@@ -276,7 +279,7 @@ src/
             └── MyHelperComponent.tsx
 ```
 
-## Bagaimana Cara Kerjanya?
+### Bagaimana Cara Kerjanya?
 
 Meskipun `_lib` berada di dalam `app` folder, Next.js akan mengabaikannya saat membangun _route_. Jadi, jika Anda mencoba mengakses `http://localhost:3000/_lib` di _browser_, Anda akan mendapatkan halaman 404 "Not Found".
 
@@ -286,13 +289,13 @@ Folder privat ini berfungsi sebagai tempat penyimpanan untuk file-file internal 
 - Komponen React yang hanya digunakan secara internal dan tidak perlu memiliki _route_ sendiri
 - Konfigurasi atau data yang tidak langsung terkait dengan _routing_
 
-## Manfaat Menggunakan Folder Privat
+### Manfaat Menggunakan Folder Privat
 
 1.  **Organisasi Kode yang Lebih Baik:** Memisahkan logika UI yang terkait dengan _routing_ dari logika internal atau komponen yang digunakan di berbagai tempat. Ini membuat struktur proyek lebih bersih dan mudah dipahami.
 2.  **Menghindari Konflik _Routing_:** Next.js memiliki konvensi penamaan file dan folder tertentu untuk _routing_ (misalnya `page.tsx`, `layout.tsx`). Dengan menggunakan folder privat, Anda menghindari potensi konflik penamaan di masa depan jika Next.js memperkenalkan konvensi baru yang kebetulan sama dengan nama folder internal Anda.
 3.  **Konsistensi:** Memberikan cara yang konsisten untuk mengelompokkan file-file terkait dalam editor kode Anda.
 
-## Catatan Tambahan
+### Catatan Tambahan
 
 - Jika Anda benar-benar perlu memiliki garis bawah (`_`) di URL Anda (misalnya `/produk_baru`), Anda bisa menggunakan versi URL _encoded_-nya, yaitu `%5f`.
 - Sebagai alternatif dari folder privat, Anda juga bisa mengandalkan _file collocation_ (menempatkan file-file terkait di folder _route_ yang sama tanpa garis bawah) atau menyimpan file-file internal di luar folder `app` sama sekali (misalnya di folder `src/components` atau `src/utils`).
@@ -303,11 +306,11 @@ Intinya, folder privat adalah alat yang rapi untuk menjaga proyek Next.js Anda t
 
 Route Groups adalah fitur di Next.js yang memungkinkan Anda mengatur _file_ dan rute proyek secara logis tanpa memengaruhi struktur URL.
 
-## Masalah yang Diselesaikan Route Groups
+### Masalah yang Diselesaikan Route Groups
 
 Ketika Anda memiliki beberapa rute terkait (misalnya, rute otentikasi seperti registrasi, _login_, lupa _password_), mereka bisa tersebar di _folder_ `app`, sehingga sulit dikelola, terutama dalam lingkungan tim. Jika Anda hanya membuat _folder_ biasa (misalnya `auth`) untuk mengelompokkannya, Next.js akan secara otomatis memetakan _folder_ bersarang ke jalur URL, sehingga URL akan berubah (misalnya, menjadi `/auth/register` alih-alih `/register`).
 
-## Solusi Route Groups
+### Solusi Route Groups
 
 Untuk menghindari perubahan URL, Anda dapat membuat **Route Group** dengan membungkus nama _folder_ dalam tanda kurung (misalnya, `(auth)`). Ini memberi tahu Next.js untuk menggunakan _folder_ tersebut hanya untuk tujuan organisasi dan mengecualikannya dari jalur URL.
 
@@ -327,7 +330,7 @@ src/
         └── page.tsx
 ```
 
-## Manfaat Menggunakan Route Groups
+### Manfaat Menggunakan Route Groups
 
 - **Organisasi Logis:** Mengelompokkan rute dan _file_ proyek secara logis, meningkatkan pengalaman _developer_, terutama dalam tim.
 - **URL Bersih:** Mempertahankan struktur URL yang bersih (misalnya, `/register` alih-alih `/auth/register`).
@@ -335,3 +338,72 @@ src/
 - **Grup Rute Bersarang:** Anda juga dapat membuat grup rute bersarang untuk organisasi yang lebih lanjut.
 
 Dengan Route Groups, Anda mendapatkan fleksibilitas dalam mengatur kode Anda sesuai dengan kebutuhan proyek, tanpa harus mengorbankan struktur URL yang diinginkan.
+
+# Layout
+
+Layouts di Next.js adalah komponen UI yang digunakan bersama oleh beberapa halaman dalam sebuah aplikasi, berfungsi untuk menyediakan struktur yang konsisten, seperti _header_ dan _footer_.
+
+### Cara Membuat Layout
+
+Anda membuat _layout_ dengan mengekspor komponen React secara _default_ dari _file_ `layout.js` atau `layout.tsx`. Komponen ini harus menerima _prop_ `children`, yang akan diisi oleh Next.js dengan konten halaman Anda.
+
+### Root Layout
+
+- Next.js menyediakan _root layout_ _default_ di _folder_ `app` (`layout.tsx`).
+- _Root layout_ ini wajib ada untuk setiap aplikasi Next.js. Jika Anda menghapusnya, Next.js akan secara otomatis membuatnya kembali.
+- _Prop_ `children` di _root layout_ adalah tempat konten halaman individual Anda (misalnya, `page.tsx` di _folder_ `app`) akan dirender.
+
+### Cara Kerjanya (Visualisasi)
+
+Ketika Anda mengunjungi sebuah URL (misalnya, `localhost:3000`), _root layout_ akan dirender. _Prop_ `children` di dalam _root layout_ akan diganti dengan konten dari _file_ `page.tsx` yang sesuai dengan rute spesifik tersebut (misalnya, `app/page.tsx` untuk halaman utama, `app/about/page.tsx` untuk halaman _about_).
+
+**Contoh Kode Sederhana untuk `layout.tsx`:**
+
+```typescript
+// src/app/layout.tsx
+
+import "./globals.css"; // Import gaya global Anda
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <header
+          style={{
+            background: "#f0f0f0",
+            padding: "10px",
+            borderBottom: "1px solid #ccc",
+          }}
+        >
+          <h1>Header Aplikasi Saya</h1>
+          <nav>
+            <a href="/">Home</a> | <a href="/about">About</a> |{" "}
+            <a href="/contact">Contact</a>
+          </nav>
+        </header>
+
+        <main style={{ padding: "20px" }}>
+          {children} {/* Di sinilah konten dari page.tsx akan dirender */}
+        </main>
+
+        <footer
+          style={{
+            background: "#f0f0f0",
+            padding: "10px",
+            borderTop: "1px solid #ccc",
+            marginTop: "20px",
+          }}
+        >
+          <p>&copy; 2025 Aplikasi Next.js Saya</p>
+        </footer>
+      </body>
+    </html>
+  );
+}
+```
+
+Dalam contoh di atas, `Header Aplikasi Saya` dan `Footer Aplikasi Saya` akan muncul di setiap halaman, sementara konten di dalam `<main>{children}</main>` akan berubah sesuai dengan halaman yang sedang diakses (`page.tsx` mana pun).
