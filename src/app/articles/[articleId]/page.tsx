@@ -1,17 +1,20 @@
+// params & searchParams menggunakan Client Component menggunakan (use) dari hook react
+// walaupun Next.js versi terbaru bisa tanpa Promise pada params dan useParams
 import Link from "next/link";
+import { use } from "react";
 
 interface NewsParams {
-  params: {
+  params: Promise<{
     articleId: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     lang?: "en" | "es" | "fr";
-  };
+  }>;
 }
 
 export default function NewsArticle({ params, searchParams }: NewsParams) {
-  const { articleId } = params;
-  const { lang = "en" } = searchParams;
+  const { articleId } = use(params);
+  const { lang = "en" } = use(searchParams);
 
   return (
     <div>
