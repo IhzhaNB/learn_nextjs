@@ -407,3 +407,80 @@ export default function RootLayout({
 ```
 
 Dalam contoh di atas, `Header Aplikasi Saya` dan `Footer Aplikasi Saya` akan muncul di setiap halaman, sementara konten di dalam `<main>{children}</main>` akan berubah sesuai dengan halaman yang sedang diakses (`page.tsx` mana pun).
+
+# Nested Layout
+
+Nested Layouts di Next.js memungkinkan Anda memiliki _layout_ khusus untuk bagian-bagian berbeda dari aplikasi Anda, selain dari _root layout_ utama.
+
+### Konsep Nested Layouts
+
+Anda dapat membuat _layout_ yang spesifik untuk bagian-bagian tertentu dari aplikasi Anda. Misalnya, halaman detail produk mungkin memiliki _layout_ yang berbeda dari halaman _dashboard_ atau halaman otentikasi.
+
+### Cara Membuat Nested Layout
+
+Untuk membuat _nested layout_, Anda menambahkan _file_ `layout.tsx` di dalam _folder_ spesifik tempat Anda menginginkan _layout_ tersebut.
+
+**Contoh Struktur Folder:**
+Jika Anda ingin _layout_ khusus untuk semua halaman produk, Anda bisa membuatnya di dalam _folder_ `products`:
+
+```
+src/
+└── app/
+    ├── layout.tsx         <- Root Layout
+    └── products/
+        ├── layout.tsx     <- Nested Layout untuk /products dan sub-jalurnya
+        ├── page.tsx       <- Halaman daftar produk (/products)
+        └── [productId]/
+            └── page.tsx   <- Halaman detail produk (/products/[productId])
+```
+
+Komponen _layout_ ini juga akan menerima _prop_ `children`, yang akan merepresentasikan konten halaman di dalam _nested layout_ tersebut. Anda bisa menambahkan elemen UI spesifik ke _nested layout_ ini, seperti bagian "Produk Unggulan" atau navigasi khusus produk.
+
+### Cara Nested Layouts Dirender
+
+Ketika Anda menavigasi ke rute yang memiliki _nested layout_, Next.js akan merender secara berurutan:
+
+1.  **Root Layout** dirender terlebih dahulu.
+2.  Konten dari **Nested Layout** kemudian menggantikan _prop_ `children` dari _root layout_.
+3.  Terakhir, konten halaman yang sebenarnya (dari `page.tsx` di dalam _folder_ bersarang) mengisi _prop_ `children` dari **Nested Layout**.
+
+**Contoh Alur Render:**
+Untuk URL `/products/1`:
+
+- _Root layout_ (dengan _header_ dan _footer_ aplikasi) dirender.
+- Kemudian, `layout.tsx` di dalam _folder_ `products` (misalnya, dengan bagian "Produk Unggulan") dirender di dalam _root layout_.
+- Terakhir, konten untuk produk "1" (dari `app/products/[productId]/page.tsx`) dirender di dalam _layout_ `products`.
+
+### Manfaat
+
+Ini memungkinkan Anda membuat _layout_ khusus untuk bagian-bagian berbeda dari aplikasi Anda, memberikan fleksibilitas dalam desain UI dan pengalaman pengguna yang lebih terfokus untuk setiap bagian.
+
+**Contoh Kode Sederhana untuk `products/layout.tsx`:**
+
+```typescript
+// src/app/products/layout.tsx
+
+import React from "react";
+
+export default function ProductsLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{ border: "2px solid blue", padding: "15px", margin: "10px" }}>
+      <h2 style={{ color: "blue" }}>Navigasi Produk</h2>
+      <nav>
+        <a href="/products">Semua Produk</a> |{" "}
+        <a href="/products/1">Produk 1</a> | <a href="/products/2">Produk 2</a>
+      </nav>
+      <hr />
+      {children} {/* Di sinilah konten page.tsx di dalam folder products akan dirender */}
+      <hr />
+      <p style={{ fontStyle: "italic" }}>Lihat juga Produk Unggulan Kami!</p>
+    </div>
+  );
+}
+```
+
+Dalam contoh ini, setiap halaman di bawah `/products` (termasuk `/products` itu sendiri dan `/products/[productId]`) akan memiliki _border_ biru, judul "Navigasi Produk", dan teks "Lihat juga Produk Unggulan Kami\!", di samping _header_ dan _footer_ dari _root layout_.
