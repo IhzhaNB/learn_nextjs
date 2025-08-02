@@ -298,3 +298,40 @@ Folder privat ini berfungsi sebagai tempat penyimpanan untuk file-file internal 
 - Sebagai alternatif dari folder privat, Anda juga bisa mengandalkan _file collocation_ (menempatkan file-file terkait di folder _route_ yang sama tanpa garis bawah) atau menyimpan file-file internal di luar folder `app` sama sekali (misalnya di folder `src/components` atau `src/utils`).
 
 Intinya, folder privat adalah alat yang rapi untuk menjaga proyek Next.js Anda tetap terorganisir dan memastikan hanya file yang dimaksudkan untuk _routing_ yang benar-benar menjadi _route_.
+
+# Route Groups
+
+Route Groups adalah fitur di Next.js yang memungkinkan Anda mengatur _file_ dan rute proyek secara logis tanpa memengaruhi struktur URL.
+
+## Masalah yang Diselesaikan Route Groups
+
+Ketika Anda memiliki beberapa rute terkait (misalnya, rute otentikasi seperti registrasi, _login_, lupa _password_), mereka bisa tersebar di _folder_ `app`, sehingga sulit dikelola, terutama dalam lingkungan tim. Jika Anda hanya membuat _folder_ biasa (misalnya `auth`) untuk mengelompokkannya, Next.js akan secara otomatis memetakan _folder_ bersarang ke jalur URL, sehingga URL akan berubah (misalnya, menjadi `/auth/register` alih-alih `/register`).
+
+## Solusi Route Groups
+
+Untuk menghindari perubahan URL, Anda dapat membuat **Route Group** dengan membungkus nama _folder_ dalam tanda kurung (misalnya, `(auth)`). Ini memberi tahu Next.js untuk menggunakan _folder_ tersebut hanya untuk tujuan organisasi dan mengecualikannya dari jalur URL.
+
+**Contoh Struktur Folder:**
+
+```
+src/
+└── app/
+    ├── (auth)/             <- Ini adalah Route Group
+    │   ├── register/
+    │   │   └── page.tsx
+    │   ├── login/
+    │   │   └── page.tsx
+    │   └── forgot-password/
+    │       └── page.tsx
+    └── dashboard/
+        └── page.tsx
+```
+
+## Manfaat Menggunakan Route Groups
+
+- **Organisasi Logis:** Mengelompokkan rute dan _file_ proyek secara logis, meningkatkan pengalaman _developer_, terutama dalam tim.
+- **URL Bersih:** Mempertahankan struktur URL yang bersih (misalnya, `/register` alih-alih `/auth/register`).
+- **Berbagi _Layout_:** Memungkinkan Anda berbagi _layout_ di antara rute-rute dalam grup tanpa memengaruhi URL. Misalnya, Anda bisa memiliki `layout.tsx` di dalam `(auth)` _folder_ yang akan diterapkan ke semua rute otentikasi.
+- **Grup Rute Bersarang:** Anda juga dapat membuat grup rute bersarang untuk organisasi yang lebih lanjut.
+
+Dengan Route Groups, Anda mendapatkan fleksibilitas dalam mengatur kode Anda sesuai dengan kebutuhan proyek, tanpa harus mengorbankan struktur URL yang diinginkan.
