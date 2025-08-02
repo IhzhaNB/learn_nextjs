@@ -13,6 +13,7 @@
 9. [Catch-all Segments in Routing](#catch-all-segments-in-routing)
 10. [Customizing Not Found Pages](#customizing-not-found-pages)
 11. [File Organization and Routing](#file-organization-and-routing)
+12. [Private Folder](#private-folder)
 
 # Introduction Next.js
 
@@ -254,3 +255,46 @@ Cara Next.js menangani organisasi _file_ dan _routing_:
   - Hanya konten yang dikembalikan oleh komponen yang diekspor _default_ di `page.tsx` yang akan dirender di _browser_. Komponen lain di dalam _file_ `page.tsx` yang sama (seperti komponen `barChart` dalam contoh) tidak akan muncul kecuali secara eksplisit disertakan dalam ekspor _default_.
 - **Kolokasi _File_:** Anda dapat dengan aman menempatkan _file_ proyek lain (seperti komponen individual, fungsi utilitas, dll.) di dalam _folder_ segmen rute di dalam direktori `app`. _File-file_ ini tidak akan secara tidak sengaja menjadi rute sendiri selama tidak ada _file_ `page.tsx` yang membuat _folder_ tersebut publik.
 - **Struktur _File_ Alternatif:** Meskipun Anda dapat menyimpan _file_ di dalam direktori `app`, Next.js itu fleksibel. Beberapa _developer_ lebih suka menyimpan _file_ di luar direktori `app`, misalnya, di _folder_ `src` dengan _folder_ `components` terpisah.
+
+# Private Folder
+
+Private Folder di Next.js adalah fitur yang dirancang untuk membantu Anda mengatur proyek dengan lebih baik. Konsep utamanya adalah folder ini **tidak akan menjadi bagian dari sistem _routing_ Next.js**, artinya tidak bisa diakses langsung melalui URL di _browser_.
+
+## Cara Membuat Folder Privat
+
+Untuk membuat folder menjadi privat, Anda hanya perlu menambahkan garis bawah (`_`) di awal nama folder tersebut.
+
+**Contoh:**
+Jika Anda membuat folder bernama `_lib` di dalam direktori `app` Anda:
+
+```
+src/
+└── app/
+    └── _lib/         <- Ini adalah folder privat
+        └── utils.ts
+        └── components/
+            └── MyHelperComponent.tsx
+```
+
+## Bagaimana Cara Kerjanya?
+
+Meskipun `_lib` berada di dalam `app` folder, Next.js akan mengabaikannya saat membangun _route_. Jadi, jika Anda mencoba mengakses `http://localhost:3000/_lib` di _browser_, Anda akan mendapatkan halaman 404 "Not Found".
+
+Folder privat ini berfungsi sebagai tempat penyimpanan untuk file-file internal proyek Anda, seperti:
+
+- Fungsi-fungsi pembantu (utility functions)
+- Komponen React yang hanya digunakan secara internal dan tidak perlu memiliki _route_ sendiri
+- Konfigurasi atau data yang tidak langsung terkait dengan _routing_
+
+## Manfaat Menggunakan Folder Privat
+
+1.  **Organisasi Kode yang Lebih Baik:** Memisahkan logika UI yang terkait dengan _routing_ dari logika internal atau komponen yang digunakan di berbagai tempat. Ini membuat struktur proyek lebih bersih dan mudah dipahami.
+2.  **Menghindari Konflik _Routing_:** Next.js memiliki konvensi penamaan file dan folder tertentu untuk _routing_ (misalnya `page.tsx`, `layout.tsx`). Dengan menggunakan folder privat, Anda menghindari potensi konflik penamaan di masa depan jika Next.js memperkenalkan konvensi baru yang kebetulan sama dengan nama folder internal Anda.
+3.  **Konsistensi:** Memberikan cara yang konsisten untuk mengelompokkan file-file terkait dalam editor kode Anda.
+
+## Catatan Tambahan
+
+- Jika Anda benar-benar perlu memiliki garis bawah (`_`) di URL Anda (misalnya `/produk_baru`), Anda bisa menggunakan versi URL _encoded_-nya, yaitu `%5f`.
+- Sebagai alternatif dari folder privat, Anda juga bisa mengandalkan _file collocation_ (menempatkan file-file terkait di folder _route_ yang sama tanpa garis bawah) atau menyimpan file-file internal di luar folder `app` sama sekali (misalnya di folder `src/components` atau `src/utils`).
+
+Intinya, folder privat adalah alat yang rapi untuk menjaga proyek Next.js Anda tetap terorganisir dan memastikan hanya file yang dimaksudkan untuk _routing_ yang benar-benar menjadi _route_.
