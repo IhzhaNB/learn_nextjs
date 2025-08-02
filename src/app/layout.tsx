@@ -27,11 +27,7 @@ export default function RootLayout({
             borderBottom: "1px solid #ccc",
           }}
         >
-          <h1>Header Aplikasi Saya</h1>
-          <nav>
-            <a href="/">Home</a> | <a href="/about">About</a> |{" "}
-            <a href="/contact">Contact</a>
-          </nav>
+          <h1>Header</h1>
         </header>
 
         <main style={{ padding: "20px" }}>
