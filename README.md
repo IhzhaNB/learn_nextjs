@@ -1,5 +1,10 @@
 # Learn Next.JS
 
+From Youtube:
+
+- Channel: **Codevolution**
+- Link Video: https://youtube.com/playlist?list=PLC3y8-rFHvwhIEc4I4YsRz5C7GOBnxSJY&si=Nt8uuWxJZmnra9aC
+
 ## Table Content
 
 1. [Introduction Next.js](#introduction-nextjs)
@@ -18,6 +23,11 @@
 14. [Layout](#layout)
 15. [Nested Layout](#nested-layout)
 16. [Multiple Root Layouts](#multiple-root-layouts)
+17. [Title Metadata](#title-metadata)
+18. [Link Component Navigation](#link-component-navigation)
+19. [Active Link](#active-link)
+20. [`params` & `searchParams`](#params--searchparams)
+21. [Navigating Programmatically](#navigating-programmatically)
 
 # Introduction Next.js
 
@@ -591,3 +601,593 @@ URL akan tetap tidak berubah (misalnya, `/login`, `/register`, `/customers`), te
 ### Manfaat
 
 Pendekatan ini memberikan fleksibilitas luar biasa untuk menciptakan antarmuka pengguna yang berbeda untuk berbagai bagian aplikasi sambil menjaga kode tetap terorganisir dan mudah dipelihara.
+
+# Title Metadata
+
+Manajemen `title` (judul) di Next.js sangat penting untuk SEO (Search Engine Optimization) dan pengalaman pengguna, karena ini adalah teks yang muncul di bilah judul _browser_ atau tab. Next.js menyediakan cara yang fleksibel untuk mengaturnya melalui _metadata_.
+
+### Mengatur Judul (`title`)
+
+Anda dapat mengatur judul dengan dua cara utama:
+
+1.  **Nilai _String_ Langsung:** Ini adalah cara paling sederhana, di mana Anda langsung memberikan _string_ sebagai judul. Anda bisa melakukannya di _file_ `layout.tsx` atau `page.tsx`.
+
+    **Contoh di `page.tsx`:**
+
+    ```typescript
+    // src/app/about/page.tsx
+    export const metadata = {
+      title: "Tentang Kami", // Judul halaman ini akan menjadi "Tentang Kami"
+    };
+
+    export default function AboutPage() {
+      return <h1>Halaman Tentang Kami</h1>;
+    }
+    ```
+
+2.  **Nilai Objek:** Pendekatan ini memberikan kontrol lebih besar dan tiga opsi penting: `default`, `template`, dan `absolute`. Disarankan untuk mengimpor dan menggunakan tipe `Metadata` dari `next` untuk dukungan TypeScript yang lebih baik saat menggunakan pendekatan objek.
+
+    **Contoh Import:**
+
+    ```typescript
+    import type { Metadata } from "next";
+    ```
+
+### Opsi Objek untuk Judul
+
+- **`default`**: Properti ini berfungsi sebagai judul _fallback_ (cadangan) untuk rute anak yang tidak memiliki judul sendiri. Jika diatur di _root layout_, halaman anak tanpa judul spesifik akan menggunakan judul _default_ ini.
+
+  **Contoh di `layout.tsx` (Root Layout):**
+
+  ```typescript
+  // src/app/layout.tsx
+  import type { Metadata } from "next";
+
+  export const metadata: Metadata = {
+    title: {
+      default: "Aplikasi Next.js Saya", // Judul default jika tidak ada judul spesifik
+      template: "%s | Aplikasi Next.js", // Akan dijelaskan di bawah
+    },
+    description: "Deskripsi umum aplikasi saya.",
+  };
+
+  export default function RootLayout({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) {
+    return (
+      <html lang="en">
+        <body>{children}</body>
+      </html>
+    );
+  }
+  ```
+
+  Jika ada `page.tsx` tanpa `metadata.title` sendiri, judulnya akan menjadi "Aplikasi Next.js Saya".
+
+- **`template`**: Opsi ini sangat berguna untuk menambahkan awalan atau akhiran yang konsisten pada judul di seluruh rute anak. Anda bisa menggunakan `%s` sebagai _placeholder_ yang akan diganti dengan judul halaman anak.
+
+  **Contoh Penggunaan `template` (di `layout.tsx`):**
+
+  ```typescript
+  // src/app/layout.tsx
+  import type { Metadata } from "next";
+
+  export const metadata: Metadata = {
+    title: {
+      default: "Halaman Utama",
+      template: "%s | Toko GadgetX", // %s akan diganti dengan judul dari page.tsx
+    },
+    description: "Toko online terbaik untuk gadget.",
+  };
+
+  // ... RootLayout komponen
+  ```
+
+  **Contoh Penggunaan di `page.tsx`:**
+
+  ```typescript
+  // src/app/products/page.tsx
+  import type { Metadata } from "next";
+
+  export const metadata: Metadata = {
+    title: "Daftar Produk", // Ini akan menggantikan %s di template
+  };
+
+  export default function ProductsPage() {
+    return <h1>Semua Produk Kami</h1>;
+  }
+  ```
+
+  Dengan setup ini, judul di _browser_ untuk `/products` akan menjadi: **"Daftar Produk | Toko GadgetX"**.
+
+- **`absolute`**: Opsi ini memungkinkan halaman spesifik untuk sepenuhnya mengesampingkan _template_ judul apa pun yang diatur oleh segmen induk (misalnya, dari `layout.tsx` di atasnya). Jika Anda mengatur `title.absolute` pada suatu halaman, judul tersebut akan ditampilkan persis seperti itu, mengabaikan semua _template_ dari _layout_ induk.
+
+  **Contoh Penggunaan `absolute`:**
+
+  ```typescript
+  // src/app/login/page.tsx
+  import type { Metadata } from "next";
+
+  export const metadata: Metadata = {
+    title: {
+      absolute: "Login ke Akun Anda", // Ini akan mengabaikan template dari layout induk
+    },
+  };
+
+  export default function LoginPage() {
+    return <h1>Masuk</h1>;
+  }
+  ```
+
+  Dengan setup ini, judul di _browser_ untuk `/login` akan menjadi: **"Login ke Akun Anda"**, tanpa tambahan " | Toko GadgetX" atau apapun dari _template_ induk.
+
+Dengan menggunakan kombinasi opsi ini, Anda dapat memiliki kontrol yang sangat granular atas judul halaman di seluruh aplikasi Next.js Anda, yang sangat membantu untuk SEO dan konsistensi merek.
+
+# Link Component Navigation
+
+### Navigasi di Next.js dengan `Link` Component
+
+Di Next.js, cara utama untuk berpindah antar halaman (atau _route_) adalah dengan menggunakan `Link` component dari `next/link`. Ini adalah pengganti elemen `<a>` HTML biasa yang lebih pintar karena memungkinkan navigasi sisi _client_ (tanpa _full page reload_), membuat aplikasi terasa lebih cepat dan mulus.
+
+**Cara Penggunaan Dasar:**
+
+Anda cukup mengimpor `Link` dan menggunakannya seperti ini:
+
+```jsx
+import Link from "next/link";
+
+function Navigation() {
+  return (
+    <nav>
+      <Link href="/">Beranda</Link> {/* Link ke halaman utama */}
+      <Link href="/produk">Daftar Produk</Link> {/* Link ke halaman produk */}
+      <Link href="/blog/artikel-pertama">Baca Artikel</Link>{" "}
+      {/* Link ke halaman dinamis */}
+    </nav>
+  );
+}
+```
+
+Ketika pengguna mengklik `Link`, Next.js akan secara otomatis melakukan navigasi tanpa memuat ulang seluruh halaman, yang memberikan pengalaman pengguna yang lebih baik.
+
+---
+
+### Memahami _Prop_ `replace`
+
+Sekarang, mari kita fokus pada _prop_ `replace`, karena ini yang seringkali membingungkan.
+
+Secara default, setiap kali Anda mengklik `Link`, Next.js akan **menambahkan entri baru** ke riwayat _browser_. Ini seperti Anda membuka halaman baru di buku catatan Anda. Jadi, jika Anda menekan tombol "Kembali" di _browser_, Anda akan kembali ke halaman sebelumnya.
+
+**Fungsi `replace`:**
+
+Ketika Anda menambahkan _prop_ `replace` pada `Link` component, Anda memberi tahu Next.js untuk **mengganti entri riwayat saat ini** dengan URL baru, alih-alih menambahkan entri baru. Ini seperti Anda **menghapus halaman saat ini** di buku catatan Anda dan **menuliskan halaman baru di tempat yang sama**.
+
+**Contoh Kasus Nyata:**
+
+Bayangkan alur navigasi ini di aplikasi Anda:
+
+1.  Anda berada di halaman **Beranda (`/`)**.
+2.  Anda mengklik `Link` ke halaman **Daftar Produk (`/products`)**.
+3.  Dari halaman Daftar Produk, Anda mengklik `Link` ke halaman **Detail Produk (`/products/123`)**.
+
+**Skenario 1: Tanpa `replace` (Perilaku Default)**
+
+- Riwayat _browser_ Anda akan terlihat seperti ini:
+  `Beranda` -\> `Daftar Produk` -\> `Detail Produk (ID 123)`
+
+- Jika Anda menekan tombol "Kembali" dari halaman **Detail Produk**:
+  Anda akan kembali ke halaman **Daftar Produk**.
+
+**Skenario 2: Menggunakan `replace` pada `Link` dari Daftar Produk ke Detail Produk**
+
+```jsx
+// Di halaman Daftar Produk
+import Link from "next/link";
+
+function ProductList() {
+  return (
+    <div>
+      <h1>Daftar Produk</h1>
+      {/* ... daftar produk */}
+      <Link href="/products/123" replace>
+        Lihat Detail Produk 123
+      </Link>{" "}
+      {/* Perhatikan 'replace' di sini */}
+    </div>
+  );
+}
+```
+
+- Riwayat _browser_ Anda akan terlihat seperti ini:
+  `Beranda` -\> `Detail Produk (ID 123)` (Halaman `Daftar Produk` **diganti** di riwayat)
+
+- Jika Anda menekan tombol "Kembali" dari halaman **Detail Produk**:
+  Anda akan **langsung kembali ke halaman Beranda**, melewati halaman Daftar Produk.
+
+**Kapan Menggunakan `replace`?**
+
+`replace` sangat berguna dalam skenario di mana Anda tidak ingin pengguna dapat kembali ke halaman sebelumnya setelah tindakan tertentu. Contoh umum meliputi:
+
+- **Setelah Login/Register:** Setelah pengguna berhasil login atau register, Anda mungkin ingin mengarahkan mereka ke _dashboard_. Jika mereka menekan tombol "Kembali", Anda tidak ingin mereka kembali ke halaman login/register yang sudah tidak relevan.
+- **Formulir Multi-Langkah:** Setelah menyelesaikan satu langkah formulir dan beralih ke langkah berikutnya, Anda mungkin ingin mencegah pengguna kembali ke langkah sebelumnya melalui tombol "Kembali" _browser_ (jika data langkah sebelumnya sudah tidak relevan atau sudah disimpan).
+- **Halaman Konfirmasi/Terima Kasih:** Setelah pengguna menyelesaikan pembelian atau mengirimkan formulir, Anda mengarahkan mereka ke halaman konfirmasi. Anda tidak ingin mereka bisa "kembali" ke halaman keranjang belanja atau formulir yang sudah selesai.
+
+---
+
+Jadi, `replace` tidak berarti "kembali dua kali". Sebaliknya, itu berarti **mengganti entri riwayat saat ini**, sehingga ketika tombol "Kembali" ditekan, _browser_ akan melompati halaman yang baru saja diganti.
+
+# Active Link
+
+Bagian ini menjelaskan cara memberikan gaya (styling) pada _link_ navigasi yang sedang aktif di aplikasi Next.js Anda. Ini penting untuk membantu pengguna memahami di mana mereka berada dalam struktur aplikasi.
+
+### Mengidentifikasi _Link_ Aktif
+
+Untuk mengetahui _link_ mana yang sedang aktif, kita perlu membandingkan jalur URL saat ini dengan `href` dari setiap _link_ navigasi.
+
+1.  **Mendapatkan Jalur URL Saat Ini:**
+    Kita menggunakan _hook_ `usePathname` dari `next/navigation`. _Hook_ ini akan mengembalikan _string_ yang merepresentasikan jalur URL saat ini (misalnya, `/login`, `/dashboard/settings`).
+
+    ```typescript
+    import { usePathname } from "next/navigation";
+
+    // ... di dalam komponen React Anda
+    const pathname = usePathname();
+    ```
+
+2.  **Menandai Komponen sebagai _Client Component_:**
+    Karena `usePathname` adalah _hook_ React, komponen yang menggunakannya harus dijalankan di sisi _client_. Oleh karena itu, Anda perlu menambahkan direktif `"use client"` di bagian paling atas _file_ komponen Anda.
+
+    ```typescript
+    "use client"; // Tambahkan ini di baris pertama file
+
+    import { usePathname } from "next/navigation";
+    import Link from "next/link";
+    // ...
+    ```
+
+3.  **Logika Penentuan Aktif:**
+    Saat Anda merender daftar _link_ navigasi (misalnya, dengan memetakan sebuah _array_), Anda bisa membuat variabel boolean `isActive` untuk setiap _link_. Variabel ini akan bernilai `true` jika _link_ tersebut adalah _link_ yang sedang aktif.
+
+    ```typescript
+    "use client";
+
+    import { usePathname } from "next/navigation";
+    import Link from "next/link";
+
+    const navLinks = [
+      { name: "Register", href: "/register" },
+      { name: "Login", href: "/login" },
+      { name: "Forgot Password", href: "/forgot-password" },
+    ];
+
+    export default function AuthLayout({
+      children,
+    }: {
+      children: React.ReactNode;
+    }) {
+      const pathname = usePathname();
+
+      return (
+        <div>
+          <nav>
+            {navLinks.map((link) => {
+              // Logika untuk menentukan apakah link aktif
+              // Ini akan true jika pathname saat ini sama persis dengan href link
+              // Atau jika pathname saat ini dimulai dengan href link (untuk nested routes),
+              // tapi hati-hati untuk link root (misalnya '/')
+              const isActive =
+                pathname === link.href ||
+                (pathname.startsWith(link.href) && link.href !== "/");
+
+              return (
+                <Link
+                  href={link.href}
+                  key={link.name}
+                  // Menerapkan gaya secara kondisional
+                  className={
+                    isActive
+                      ? "font-bold text-red-500 mr-4"
+                      : "text-blue-500 mr-4"
+                  }
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+          </nav>
+          <main>{children}</main>
+        </div>
+      );
+    }
+    ```
+
+### Menerapkan Gaya (Styling)
+
+Setelah Anda memiliki variabel `isActive`, Anda bisa menerapkan gaya CSS secara kondisional pada komponen `Link` atau elemen pembungkusnya.
+
+Dalam contoh di atas, kelas Tailwind CSS digunakan:
+
+- Jika `isActive` adalah `true`, maka `font-bold` (teks tebal) dan `text-red-500` (warna merah) akan diterapkan.
+- Jika `isActive` adalah `false`, maka `text-blue-500` (warna biru) akan diterapkan.
+
+Pastikan _file_ CSS yang berisi definisi kelas-kelas ini (misalnya, _file_ CSS global atau _file_ CSS khusus _layout_ tersebut) diimpor ke dalam komponen _layout_ Anda agar gaya dapat terlihat.
+
+Dengan langkah-langkah ini, _link_ navigasi yang sedang aktif akan memiliki gaya yang berbeda, membantu pengguna memahami posisi mereka dalam aplikasi.
+
+# `params` & `searchParams`
+
+Dalam Next.js, ada dua jenis parameter utama yang bisa Anda gunakan untuk navigasi dan mengambil data: `params` dan `searchParams`. Keduanya memungkinkan Anda membuat URL yang dinamis dan mengambil informasi dari URL tersebut.
+
+### 1\. `params` (Parameter Rute Dinamis)
+
+`params` digunakan untuk mengambil nilai dari segmen rute dinamis yang Anda definisikan di nama _folder_. Misalnya, jika Anda memiliki rute `/articles/[articleId]`, maka `articleId` adalah parameter rute.
+
+- **Akses di Server Components (`page.tsx` atau `layout.tsx`):**
+  Di Next.js App Router saat ini, `params` tersedia langsung sebagai objek di _props_ komponen Anda. Anda tidak perlu `await` mereka. Fungsi komponen Anda bisa `async` jika Anda perlu mengambil data lain secara asinkron menggunakan nilai `params`.
+
+  ```typescript
+  // app/articles/[articleId]/page.tsx
+  interface ArticlePageProps {
+    params: Promise<{
+      articleId: string; // articleId akan langsung tersedia sebagai string
+    }>;
+  }
+
+  export default async function ArticlePage({ params }: ArticlePageProps) {
+    const { articleId } = await params; // Langsung destructure
+
+    // Contoh: Mengambil data artikel berdasarkan articleId
+    // const articleData = await fetch(`https://api.example.com/articles/${articleId}`);
+    // const article = await articleData.json();
+
+    return (
+      <div>
+        <h1>Detail Artikel: {articleId}</h1>
+        {/* <p>{article.title}</p> */}
+      </div>
+    );
+  }
+  ```
+
+- **Akses di Client Components:**
+  Di Client Components, Anda menggunakan _hook_ `useParams` dari `next/navigation` untuk mengakses `params`.
+
+  ```typescript
+  // components/ArticleDetailsClient.tsx
+  "use client";
+
+  import { useParams } from "next/navigation";
+  import { useEffect, useState } from "react";
+
+  export default function ArticleDetailsClient() {
+    const params = useParams();
+    const articleId = params.articleId as string; // Langsung tersedia
+
+    // ... (logika data fetching di useEffect jika diperlukan)
+
+    return <p>ID Artikel dari Client Component: {articleId}</p>;
+  }
+  ```
+
+### 2\. `searchParams` (Parameter Kueri/Query Parameters)
+
+`searchParams` digunakan untuk mengambil nilai dari parameter kueri di URL, yaitu bagian setelah tanda tanya (`?`). Ini sering digunakan untuk filter, opsi pengurutan, atau data opsional lainnya.
+
+- **Akses di Server Components (`page.tsx`):**
+  Sama seperti `params`, `searchParams` juga tersedia langsung sebagai objek di _props_ komponen `page.tsx`.
+
+  ```typescript
+  // app/articles/[articleId]/page.tsx (lanjutan dari contoh di atas)
+  interface ArticlePageProps {
+    params: Promise<{
+      articleId: string;
+    }>;
+    searchParams: Promise<{
+      language?: string; // searchParams akan langsung tersedia sebagai objek
+      sort?: string;
+    }>;
+  }
+
+  export default async function ArticlePage({
+    params,
+    searchParams,
+  }: ArticlePageProps) {
+    const { articleId } = await params;
+    const { language, sort } = await searchParams; // Langsung destructure
+
+    return (
+      <div>
+        <h1>Detail Artikel: {articleId}</h1>
+        {language && <p>Bahasa: {language}</p>}
+        {sort && <p>Urutkan berdasarkan: {sort}</p>}
+      </div>
+    );
+  }
+  ```
+
+  **Contoh URL:** `/articles/breaking-news-123?language=English&sort=newest`
+
+- **Akses di Client Components:**
+  Di Client Components, Anda menggunakan _hook_ `useSearchParams` dari `next/navigation` untuk mengakses `searchParams`.
+
+  ```typescript
+  // components/LanguageSwitcher.tsx
+  "use client";
+
+  import { useSearchParams, useRouter } from "next/navigation";
+  import Link from "next/link";
+
+  export default function LanguageSwitcher() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const currentLanguage = searchParams.get("language") || "default";
+
+    const handleLanguageChange = (newLang: string) => {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("language", newLang);
+      router.push(`?${newSearchParams.toString()}`);
+    };
+
+    return (
+      <div>
+        <p>Bahasa Saat Ini: {currentLanguage}</p>
+        <button onClick={() => handleLanguageChange("English")}>English</button>
+        <button onClick={() => handleLanguageChange("Indonesian")}>
+          Indonesian
+        </button>
+      </div>
+    );
+  }
+  ```
+
+### Perbedaan Penting dan Catatan
+
+- **`page.tsx` vs `layout.tsx`:**
+
+  - _File_ `page.tsx` memiliki akses ke `params` dan `searchParams`.
+  - _File_ `layout.tsx` **hanya memiliki akses ke `params`**. `searchParams` tidak tersedia di komponen _layout_. Ini karena _layout_ di-_render_ di tingkat yang lebih tinggi dan mungkin tidak selalu memerlukan informasi kueri spesifik halaman.
+
+- **Tentang `Promise` dan _Hook_ `use`:**
+  Ada beberapa kebingungan yang sering muncul terkait `params` dan `searchParams` sebagai `Promise` atau penggunaan _hook_ `use` dari React.
+
+  - Di Next.js App Router yang modern, `params` dan `searchParams` yang diterima sebagai _props_ di **Server Components** (`page.tsx`) **bukanlah `Promise`**. Mereka sudah berupa objek yang siap digunakan.
+  - Demikian pula, di **Client Components**, _hook_ `useParams()` dan `useSearchParams()` langsung mengembalikan objek yang siap digunakan.
+  - _Hook_ `use()` dari React digunakan untuk **membaca nilai dari `Promise`** atau **konteks** di Client Components. Jika Anda melihat contoh yang menggunakan `use(params)` atau `use(searchParams)`, itu mungkin merujuk pada pola yang lebih lama atau skenario yang sangat spesifik di mana _params_ atau _searchParams_ itu sendiri berasal dari sumber asinkron yang perlu di-_resolve_ dengan _hook_ `use`. Namun, untuk kasus standar pengambilan _route_ dan _query parameters_, `useParams()` dan `useSearchParams()` adalah cara yang benar dan langsung.
+
+Dengan memahami `params` dan `searchParams`, Anda dapat membangun aplikasi Next.js yang sangat dinamis dan responsif terhadap URL.
+
+# Navigating Programmatically
+
+Navigasi programatik di Next.js merujuk pada perpindahan antar halaman yang dipicu oleh kode, bukan oleh klik _link_ tradisional. Ini sangat berguna untuk skenario seperti pengalihan setelah pengiriman formulir (misalnya, halaman konfirmasi pesanan).
+
+Next.js menyediakan beberapa cara untuk melakukan navigasi programatik:
+
+### 1\. _Hook_ `useRouter` (Untuk Client Components)
+
+_Hook_ `useRouter` dari `next/navigation` adalah inti dari navigasi programatik di Client Components.
+
+- **Penggunaan:** Anda perlu mengimpornya dan menginisialisasinya di dalam komponen Anda: `const router = useRouter();`.
+- **`"use client"`:** Karena ini adalah _hook_ React, komponen yang menggunakannya harus ditandai dengan direktif `"use client"` di bagian atas _file_.
+
+Berikut adalah metode-metode utama yang disediakan oleh `router` objek:
+
+- **`router.push(path)`:**
+
+  - Ini adalah metode yang paling umum digunakan.
+  - Navigasi ke jalur yang ditentukan (misalnya, `router.push('/')` untuk ke halaman utama).
+  - **Menambahkan entri baru** ke tumpukan riwayat _browser_. Artinya, jika pengguna menekan tombol "Kembali", mereka akan kembali ke halaman sebelumnya.
+
+  **Contoh:**
+
+  ```typescript
+  "use client";
+
+  import { useRouter } from "next/navigation";
+
+  export default function OrderProduct() {
+    const router = useRouter();
+
+    const handlePlaceOrder = () => {
+      // Logika untuk memproses pesanan...
+      alert("Pesanan berhasil ditempatkan!");
+      router.push("/"); // Navigasi ke halaman utama setelah pesanan
+    };
+
+    return (
+      <div>
+        <h1>Halaman Pesanan Produk</h1>
+        <button onClick={handlePlaceOrder}>Tempatkan Pesanan</button>
+      </div>
+    );
+  }
+  ```
+
+- **`router.replace(path)`:**
+
+  - Mirip dengan `push`, tetapi ini **mengganti entri saat ini** di tumpukan riwayat _browser_ alih-alih menambahkan yang baru.
+  - Ini analog dengan _prop_ `replace` pada komponen `<Link>`.
+  - Berguna ketika Anda tidak ingin pengguna dapat kembali ke halaman sebelumnya (misalnya, setelah halaman _login_ atau halaman konfirmasi).
+
+  **Contoh:**
+
+  ```typescript
+  "use client";
+
+  import { useRouter } from "next/navigation";
+
+  export default function LoginPage() {
+    const router = useRouter();
+
+    const handleLogin = () => {
+      // Logika autentikasi...
+      if (loginSuccess) {
+        router.replace("/dashboard"); // Ganti halaman login dengan dashboard di riwayat
+      }
+    };
+
+    return (
+      <div>
+        <h1>Login</h1>
+        <button onClick={handleLogin}>Masuk</button>
+      </div>
+    );
+  }
+  ```
+
+- **`router.back()`:**
+
+  - Navigasi ke halaman sebelumnya dalam riwayat _browser_. Mirip dengan menekan tombol "Kembali" di _browser_.
+
+- **`router.forward()`:**
+
+  - Navigasi ke halaman berikutnya dalam riwayat _browser_. Mirip dengan menekan tombol "Maju" di _browser_.
+
+### 2\. Fungsi `redirect` (Untuk Server Components)
+
+Fungsi `redirect` dari `next/navigation` adalah cara lain untuk menangani navigasi programatik, tetapi ini **dirancang untuk digunakan di Server Components** (atau di _server actions_/API routes).
+
+- **Penggunaan:** Anda mengimpornya dan memanggilnya dengan jalur tujuan: `redirect('/products')`.
+- **Perilaku:** Ketika `redirect` dipanggil, ia akan menghentikan _rendering_ komponen saat ini dan langsung mengalihkan _request_ ke URL yang ditentukan.
+
+**Contoh:**
+Misalkan Anda memiliki halaman detail ulasan (`/reviews/[reviewId]`), dan Anda ingin mengalihkan pengguna ke halaman produk jika ID ulasan tidak valid.
+
+```typescript
+// app/reviews/[reviewId]/page.tsx
+import { redirect } from "next/navigation";
+
+interface ReviewPageProps {
+  params: {
+    reviewId: string;
+  };
+}
+
+export default async function ReviewPage({ params }: ReviewPageProps) {
+  const { reviewId } = params;
+
+  // Logika untuk memvalidasi reviewId
+  const isValidReviewId = parseInt(reviewId) < 100; // Contoh validasi sederhana
+
+  if (!isValidReviewId) {
+    // Jika ID tidak valid, alihkan ke halaman produk
+    redirect("/products");
+  }
+
+  return (
+    <div>
+      <h1>Detail Ulasan untuk ID: {reviewId}</h1>
+      <p>Konten ulasan di sini...</p>
+    </div>
+  );
+}
+```
+
+Dalam contoh ini, jika `reviewId` tidak valid, pengguna akan langsung dialihkan ke halaman `/products` di sisi _server_, sebelum halaman ulasan sempat dirender.
+
+Dengan kombinasi `useRouter` di Client Components dan `redirect` di Server Components, Anda memiliki kontrol penuh atas alur navigasi aplikasi Next.js Anda.
+
+---
+
+# => Next to route-handlers-demo app
