@@ -1190,4 +1190,4 @@ Dengan kombinasi `useRouter` di Client Components dan `redirect` di Server Compo
 
 ---
 
-# => Next to route-handlers-demo app
+# ─> Click [Continue](https://github.com/IhzhaNB/next-be-routehandler) to Route Handler
