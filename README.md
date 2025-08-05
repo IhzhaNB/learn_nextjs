@@ -3,7 +3,7 @@
 From Youtube:
 
 - Channel: **Codevolution**
-- Link Video: https://youtube.com/playlist?list=PLC3y8-rFHvwhIEc4I4YsRz5C7GOBnxSJY&si=Nt8uuWxJZmnra9aC
+- Link Video: [Next.js 15](https://youtube.com/playlist?list=PLC3y8-rFHvwhIEc4I4YsRz5C7GOBnxSJY&si=Nt8uuWxJZmnra9aC)
 
 ## Table Content
 
